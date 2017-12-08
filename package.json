@@ -1,0 +1,26 @@
+{
+  "name": "polyclinic-queue-scrapper",
+  "version": "0.0.0",
+  "description": "AWS Lambda function that polls queuing time at SingHealth and NHG polyclinics and stores result on Firebase",
+  "main": "index.js",
+  "scripts": {
+    "build": "zip -r index.zip index.js node_modules/",
+    "upload": "npm run build && aws lambda update-function-code --function-name polyclinic-queue-scrapper --zip-file fileb://index.zip",
+    "test": "exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yongjun21/polyclinic-queue-scrapper.git"
+  },
+  "author": "Yong Jun",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yongjun21/polyclinic-queue-scrapper/issues"
+  },
+  "homepage": "https://github.com/yongjun21/polyclinic-queue-scrapper#readme",
+  "dependencies": {
+    "axios": "^0.17.1",
+    "cheerio": "^1.0.0-rc.2",
+    "firebase": "^4.8.0"
+  }
+}
