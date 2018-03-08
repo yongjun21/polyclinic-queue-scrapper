@@ -2,22 +2,12 @@ const axios = require('axios')
 const cheerio = require('cheerio')
 const url = require('url')
 
-const firebase = require('firebase')
-
-firebase.initializeApp({
-  apiKey: 'AIzaSyD3ESiYmskRwKtFN4L4K17A1Ip6Ki0-yYk',
-  authDomain: 'polyclinic-queue-scrapper.firebaseapp.com',
-  databaseURL: 'https://polyclinic-queue-scrapper.firebaseio.com',
-  projectId: 'polyclinic-queue-scrapper',
-  storageBucket: 'polyclinic-queue-scrapper.appspot.com',
-  messagingSenderId: '463810438567'
-})
-
+const firebase = require('./model')
 const database = firebase.database()
 
 const polyclinics = {
   SingHealth: {
-    endpoint: 'https://apps.singhealth.com.sg/QWatch/QimgPageNew/Loc_Code/',
+    endpoint: 'https://apps.singhealth.com.sg/QWatch/QimgPageNew/Loc_Code/__KEY__',
     keys: {
       BDP: 'Bedok',
       BMP: 'Bukit Merah',
@@ -26,18 +16,24 @@ const polyclinics = {
       PRP: 'Pasir Ris',
       PGP: 'Punggol',
       SKP: 'Sengkang',
-      TMP: 'Tampines'
+      TMP: 'Tampines',
+      QTP: 'Queenstown'
     }
   },
   NHG: {
-    endpoint: 'https://smile.nhgp.com.sg/StatPage.aspx?location=',
+    endpoint: 'https://smile.nhgp.com.sg/Page/__KEY__.html',
     keys: {
       amk: 'Ang Mo Kio',
       hou: 'Hougang',
       wds: 'Woodlands',
       gyl: 'Geylang',
       tpy: 'Toa Payoh',
-      yis: 'Yishun'
+      yis: 'Yishun',
+      bbk: 'Bukit Batok',
+      cck: 'Choa Chu Kang',
+      clm: 'Clementi',
+      jur: 'Jurong',
+      pio: 'Pioneer'
     }
   }
 }
@@ -65,7 +61,7 @@ exports.handler = function (event, context, callback) {
 
 function fetchQueuingTime (group, key, timestamp) {
   timestamp = timestamp - timestamp % (60 * 1000)
-  const url = polyclinics[group].endpoint + key
+  const url = polyclinics[group].endpoint.replace('__KEY__', key)
   const label = polyclinics[group].keys[key]
   return axios.get(url)
     .then(res => cheerio.load(res.data))
@@ -123,5 +119,6 @@ function resolveFromUrl (base) {
 function validateSrc (url) {
   if (url === 'http://apps.singhealth.com.sg/qwatch/Images/blankimage.jpg') return null
   if (url === 'https://smile.nhgp.com.sg/Images/closed.jpg') return null
+  if (url === 'https://smile.nhgp.com.sg/Images/lunch.jpg') return null
   return url
 }
